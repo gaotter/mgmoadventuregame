@@ -1,98 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
+using Mgmoadventuregame.Enteties;
 
-namespace Step6
+namespace Mgmoadventuregame
 {
 
-    class Room
-    {
-        public string Name;
-        public string Description;
-        public Dictionary<string, Room> Connections;
-        public int NumEnemies;
-        public int NumCoins;
-        public bool HasStaffOfHope;
-        public List<Enemy> Enemies { get; set; } = new List<Enemy>();
-
-        public Room(string name, string description, int numCoins, bool hasStaffOfHope)
-        {
-            Name = name;
-            Description = description;
-            Connections = new Dictionary<string, Room>();
-            NumCoins = numCoins;
-            HasStaffOfHope = hasStaffOfHope;
-
-        }
-
-        public void AddConnection(string direction, Room room)
-        {
-            if (Connections.ContainsKey(direction))
-            {
-                throw new ArgumentException("Direction already used by another room.");
-            }
-
-            Connections[direction] = room;
-            string oppositeDirection = GetOppositeDirection(direction);
-            room.Connections[oppositeDirection] = this;
-            string connectionDescription = string.Format("You see a door to the {1}.", room.Name.ToLower(), direction);
-            Description += " " + connectionDescription;
-            room.Description += " " + GetOppositeDirectionDescription(connectionDescription);
-        }
-
-        private string GetOppositeDirection(string direction)
-        {
-            switch (direction)
-            {
-                case "north":
-                    return "south";
-                case "east":
-                    return "west";
-                case "south":
-                    return "north";
-                case "west":
-                    return "east";
-                default:
-                    throw new ArgumentException("Invalid direction: " + direction);
-            }
-        }
-
-        private string GetOppositeDirectionDescription(string connectionDescription)
-        {
-            string pattern = @"\b(north|east|south|west)\b";
-            Match match = Regex.Match(connectionDescription, pattern);
-            if (match.Success)
-            {
-                string direction = match.Groups[1].Value;
-                string oppositeDirection = GetOppositeDirection(direction);
-                return Regex.Replace(connectionDescription, pattern, oppositeDirection);
-            }
-            else
-            {
-                throw new ArgumentException("Invalid connection description: " + connectionDescription);
-            }
-        }
-
-        public void AddEnemy(Enemy enemy)
-        {
-            Enemies.Add(enemy);
-            string enemyDescription = string.Format("You see a {0} with {1} health.", enemy.Name.ToLower(), enemy.Health);
-            // Description += " " + enemyDescription;
-        }
-
-        public void RemoveEnemy(Enemy enemy)
-        {
-            Enemies.Remove(enemy);
-            string enemyDescription = string.Format("You defeated the {0}!", enemy.Name.ToLower());
-            //  Description = Description.Replace(enemyDescription, "");
-        }
-
-    }
-
-    class Game
+    public class Game
     {
         private static Player player = new Player("Aragorn", 1500, 400);
-        public static void Main(string[] args)
+        public static void Start(string[] args)
         {
 
             Console.WriteLine(@"The world is in peril. The evil demon Surus has unleashed his wrath upon the land, and the only way to stop him is to destroy him with the Staff of Hope. The staff was created by a forgotten wizard guild that once stood against Surus. But the guild was destroyed by Surus, and the staff was lost.
@@ -123,8 +37,8 @@ As you leave the room, you can feel the power of the staff still coursing throug
 
             randomRooms[1].AddEnemy(new Enemy("Goblin", 10, 5));
             randomRooms[1].AddEnemy(new Enemy("Goblin", 10, 5));
-            
-            
+
+
 
             randomRooms[2].AddConnection("south", randomRooms[3]);
 
@@ -250,12 +164,12 @@ As you leave the room, you can feel the power of the staff still coursing throug
                                 PrintGobling();
                             }
 
-                            if(enemy.Equals("Orc"))
+                            if (enemy.Equals("Orc"))
                             {
                                 PrintOrc();
                             }
 
-                            if(enemy.Equals("Dragon"))
+                            if (enemy.Equals("Dragon"))
                             {
                                 PrintDragon();
                             }
@@ -266,7 +180,7 @@ As you leave the room, you can feel the power of the staff still coursing throug
                         Console.WriteLine("Unknown command.");
                     }
                 }
-               
+
 
             }
 
@@ -347,7 +261,7 @@ As you leave the room, you can feel the power of the staff still coursing throug
         }
 
 
-         static void PrintDragon()
+        static void PrintDragon()
         {
             Console.WriteLine(@"
                / \__
@@ -356,49 +270,6 @@ As you leave the room, you can feel the power of the staff still coursing throug
              /   (_____/
             /_____/   U
 ");
-        }
-    }
-    
-
-
-    public class Enemy
-    {
-        public string Name { get; set; }
-        public int Health { get; set; }
-        public int Damage { get; set; }
-
-        public Enemy(string name, int health, int damage)
-        {
-            Name = name;
-            Health = health;
-            Damage = damage;
-        }
-
-        public void Attack(Player player)
-        {
-            Console.WriteLine("{0} attacks {1} for {2} damage!", Name, player.Name, Damage);
-            player.Health -= Damage;
-        }
-    }
-
-
-    public class Player
-    {
-        public string Name { get; set; }
-        public int Health { get; set; }
-        public int Damage { get; set; }
-
-        public Player(string name, int health, int damage)
-        {
-            Name = name;
-            Health = health;
-            Damage = damage;
-        }
-
-        public void Attack(Enemy enemy)
-        {
-            Console.WriteLine("{0} attacks {1} for {2} damage!", Name, enemy.Name, Damage);
-            enemy.Health -= Damage;
         }
     }
 
